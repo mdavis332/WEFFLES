@@ -1,10 +1,13 @@
 <#  Setup script for Creating an IR/Threat Hunting Console with Windows Event Forwaring and PowerBI full documentation at https://aka.ms/weffles
 
-from https://aka.ms/jessica @jepayneMSFT with some help from Kurt Falde @kurt_falde
-
-Current version uses EventLogWatcher.psm1 from https://pseventlogwatcher.codeplex.com - although @Lee_Holmes told me BinaryFormatter was not optimal so that may change. :)
+Should be run from an Admin PowerShell session with a domain account with permissions to add/edit GPOs, 
+on the server you wish to act as the Windows Event Log Collector.
+This script will create a GPO called 'COMP.WefPolicy' which should be manually linked to OU containing any computers that you want to push subscribed events to the collector.
 
 #>
+
+# FQDN of Server to act as Windows Event collector
+#$ServerName = $env:COMPUTERNAME
 
 <#
 
@@ -14,8 +17,8 @@ But I errored on the side of "make sure it works, as often as possible" since of
 
 #>
 mkdir c:\weffles
-copy *.* c:\weffles
-cd C:\weffles
+Copy-Item *.* c:\weffles
+Set-Location C:\weffles
 
 
 #Setting WinRM Service to automatic start and running quickconfig
@@ -73,6 +76,52 @@ wecutil cs "Subs\RemoteSysmon.xml"
 #Set the Windows Event Collector Service to start type automatic, it's automatic with delayed start by default, which is fine as that lets the dependencies churn in.
 #it is also annoying though, as sometimes you spend a good 5+ minutes thinking WEFFLES isn't working. Be patient. :)
 Set-Service -Name Wecsvc -StartupType "Automatic"
+net start wecsvc
+
+
+# Configure a GPO with client policy to forward subscription events to the central WE Collector
+$NewGPo = New-GPO -Name COMP.WefPolicy -Comment 'This is an auto-generated GPO to configure Windows Event Forwarding'
+#   1. Create WinRM service and set it to start auto
+# Splat parameters to pass to Set-GPPrefRegistryValue cmdlet
+$parmsForSet = @{
+    Guid      = "$($NewGpo.Id.toString())"
+    Context   = 'Computer'
+    Action    = 'Update'
+    Key       = 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WinRM\Service'
+    ValueName = 'AllowAutoConfig'
+    Value     = '00000001'
+    Type      = 'DWord'
+}
+# Now add the reg key to set client WinRM Service
+Set-GPPrefRegistryValue @parmsForSet
+# Splat parameters to pass to Set-GPPrefRegistryValue cmdlet
+$parmsForSet.ValueName = 'IPv4Filter'
+$parmsForSet.Value = '*'
+$parmsForSet.Type = 'String'
+
+#   2. Allow remote server mgmt through WinRM
+# Now add the reg key to set client WinRM Service ipv4 filter
+Set-GPPrefRegistryValue @parmsForSet
+# Splat parameters to pass to Set-GPPrefRegistryValue cmdlet
+$parmsForSet.ValueName = 'IPv6Filter'
+# Now add the reg key to set client WinRM Service ipv6 filter
+Set-GPPrefRegistryValue @parmsForSet
+
+#   3. Provide event log reader access
+
+#   4. Add WEF Server sub address
+# Splat parameters to pass to Set-GPPrefRegistryValue cmdlet
+$parmsForSet = @{
+    Guid      = "$($NewGpo.Id.toString())"
+    Context   = 'Computer'
+    Action    = 'Update'
+    Key       = 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\EventForwarding\SubscriptionManager'
+    ValueName = '1'
+    Value     = "Server=http://${env:COMPUTERNAME}.${env:USERDNSDOMAIN}:5985/wsman/SubscriptionManager/WEC"
+    Type      = 'String'
+}
+# Now add the reg key to set the collection server
+Set-GPPrefRegistryValue @parmsForSet
 
 
 <#
