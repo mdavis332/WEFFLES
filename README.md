@@ -7,8 +7,6 @@ Jessica Payne (https://twitter.com/jepaynemsft) originally wrote full blog post 
 ## Purpose
 This lab has been designed with defenders in mind. Its primary purpose is to allow the user to quickly build a Windows Event Collector server that comes pre-loaded with security logging configurations.
 
-Read more about Detection Lab on Medium here: https://medium.com/@clong/introducing-detection-lab-61db34bed6ae
-
 ## Primary Features:
 * Windows Event Collector service started and set to 'auto'
 * Windows event subscriptions created for standard logging of security-related EventIDs
@@ -26,7 +24,7 @@ Read more about Detection Lab on Medium here: https://medium.com/@clong/introduc
 
 ## Installed Tools
   * Sysmon
----
+
 ## Contributing
 Contributions, fixes, and improvements can be submitted directly against this project as a GitHub issue or pull request.
 
