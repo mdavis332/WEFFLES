@@ -63,7 +63,7 @@ domain controllers and workstations as well as the process and logon type - and 
 wecutil cs "coreevents.xml"
 
 #Creating Task Scheduler Item to restart parsing script on reboot of system.
-schtasks.exe /create /tn "WEF Parsing Task" /xml WEFFLESParsingTask.xml
+#schtasks.exe /create /tn "WEF Parsing Task" /xml WEFFLESParsingTask.xml
 
 #Set the Windows Event Collector Service to start type automatic, it's automatic with delayed start by default, which is fine as that lets the dependencies churn in. 
 #it is also annoying though, as sometimes you spend a good 5+ minutes thinking WEFFLES isn't working. Be patient. :)
