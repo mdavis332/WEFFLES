@@ -89,7 +89,7 @@ $parmsForSet = @{
     Action    = 'Update'
     Key       = 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WinRM\Service'
     ValueName = 'AllowAutoConfig'
-    Value     = '00000001'
+    Value     = 00000001
     Type      = 'DWord'
 }
 # Now add the reg key to set client WinRM Service
