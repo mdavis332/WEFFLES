@@ -18,8 +18,6 @@ But I errored on the side of "make sure it works, as often as possible" since of
 #>
 mkdir c:\weffles
 Copy-Item *.* c:\weffles
-Set-Location C:\weffles
-
 
 #Setting WinRM Service to automatic start and running quickconfig
 Set-Service -Name winrm -StartupType Automatic
