@@ -59,6 +59,12 @@ domain controllers and workstations as well as the process and logon type - and 
 
 #>
 
+#Set the Windows Event Collector Service to start type automatic, it's automatic with delayed start by default, which is fine as that lets the dependencies churn in.
+#it is also annoying though, as sometimes you spend a good 5+ minutes thinking WEFFLES isn't working. Be patient. :)
+Set-Service -Name Wecsvc -StartupType "Automatic"
+#WEC service must be running before wecutil can import subs below
+net start wecsvc
+
 #Import the core subscriptions, if you edited the "Interesting Accounts" example, uncomment that, and if you have Defender as your AV, uncomment the MalwareEvents
 #If your env uses DameWare, uncomment that line for dameware login events on remote PCs
 wecutil cs "Subs\InterestingAccounts.xml"
@@ -72,12 +78,6 @@ wecutil cs "Subs\RemoteSysmon.xml"
 
 #Creating Task Scheduler Item to restart parsing script on reboot of system.
 #schtasks.exe /create /tn "WEF Parsing Task" /xml WEFFLESParsingTask.xml
-
-#Set the Windows Event Collector Service to start type automatic, it's automatic with delayed start by default, which is fine as that lets the dependencies churn in.
-#it is also annoying though, as sometimes you spend a good 5+ minutes thinking WEFFLES isn't working. Be patient. :)
-Set-Service -Name Wecsvc -StartupType "Automatic"
-net start wecsvc
-
 
 # Configure a GPO with client policy to forward subscription events to the central WE Collector
 $NewGPo = New-GPO -Name COMP.WefPolicy -Comment 'This is an auto-generated GPO to configure Windows Event Forwarding'
