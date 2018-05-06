@@ -1,4 +1,7 @@
-﻿#comment
+# Download the bootstrapper for sysmon install/config
+(New-Object System.Net.WebClient).DownloadFile('https://github.com/mdavis332/sysmon-config/blob/master/Install%20Sysmon.bat','C:\ProgramData\sysmon\InstallSysmon.bat')"
+# Install sysmon and the config file to begin logging events on this server 
+& 'C:\ProgramData\sysmon\InstallSysmon.bat'
 
 $workingdir = "c:\weffles"
 
