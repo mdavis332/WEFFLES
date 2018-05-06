@@ -13,8 +13,8 @@ This lab has been designed with defenders in mind. Its primary purpose is to all
 * Reg keys created inside GPO to configure client computers to push subscription-related events to Windows event collector
 
 ## Planned Updates
-* Integrate Sysmon installation and configuration using mdavis332's open-sourced configuration, forked from ion-storm which is heavily built upon SwiftOnSecurity's
-* Integrate Graylog setup/config/alerting
+- [x] Integrate Sysmon installation and configuration using mdavis332's open-sourced configuration, forked from ion-storm which is heavily built upon SwiftOnSecurity's
+- [ ] Integrate Graylog setup/config/alerting
 
 ## Requirements
 * Server 2012R2 or higher joined to domain
